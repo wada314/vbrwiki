@@ -568,10 +568,11 @@ h1, h2, h3 {
 }
 
 h1 {
-    border-left: 0.5em solid #ADB9CC
+    border-left: 0.5em solid #ADB9CC;
+    border-bottom: 0.1em solid #ADB9CC;
 }
 
 h2 {
-    border-left: 0.3em solid #ADB9CC
-    border-bottom: 0.1em solid #ADB9CC
+    border-left: 0.3em solid #ADB9CC;
+    border-bottom: 0.1em solid #ADB9CC;
 }
