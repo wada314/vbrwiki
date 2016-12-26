@@ -14,15 +14,6 @@ body {
     border: 0;
 }
 
-/* user interface styles */
-#header {
-    padding:1em 0 0 1em;
-    margin:0px;
-
-    text-align: center;
-    min-height: 4em;
-}
-
 a:link { text-decoration: none; }
 a:link:hover, a:link:active { text-decoration: underline; color: green; }
 a:visited { text-decoration: none; color: blue; }
@@ -530,6 +521,7 @@ table.navigation {
     background-position: 0 50%;
     padding-left: 18px;
 }
+
 
 /* My own settings */
 
