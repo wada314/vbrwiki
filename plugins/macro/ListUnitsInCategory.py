@@ -110,7 +110,7 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         unit['スキル7'] = skill_pair_to_str(unit['スキル7'], unit['ス値7'])
         unit['スキル8'] = skill_pair_to_str(unit['スキル8'], unit['ス値8'])
         unit['リーダー1'] = skill_pair_to_str(unit['リーダー1'], unit['リ値1'])
-        unit['リーダー2'] = skill_pair_to_str(unit['リーダー2'], unit['リ値1'])
+        unit['リーダー2'] = skill_pair_to_str(unit['リーダー2'], unit['リ値2'])
         unit['アシスト'] = skill_pair_to_str(unit['アシスト'], unit['ア値1'])
 
         edit = formatter.pagelink(True, unit['名前'].decode('utf-8'), querystr='action=edit')
