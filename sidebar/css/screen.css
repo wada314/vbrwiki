@@ -23,30 +23,6 @@ body {
     min-height: 4em;
 }
 
-#sidebar {
-    float: left;
-    left: 0;
-    width: 14em;
-    height: auto;
-}
-#sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6, #sidebar h7 {
-    font-size: 90%;
-    margin-bottom: 0;
-    margin-left: 4px;
-    margin-right: 6px;
-}
-
-#page {
-    margin-left: 14em;
-}
-
-#footer {
-    clear: both;
-    margin: 0;
-    padding: 0;
-}
-
-
 a:link { text-decoration: none; }
 a:link:hover, a:link:active { text-decoration: underline; color: green; }
 a:visited { text-decoration: none; color: blue; }
@@ -554,3 +530,30 @@ table.navigation {
     background-position: 0 50%;
     padding-left: 18px;
 }
+
+/* My own settings */
+
+#sidebar {
+    float: left;
+    left: 0;
+    width: 14em;
+    height: auto;
+}
+#sidebar h1, #sidebar h2, #sidebar h3, #sidebar h4, #sidebar h5, #sidebar h6, #sidebar h7 {
+    font-size: 90%;
+    margin-bottom: 0;
+    margin-left: 4px;
+    margin-right: 6px;
+}
+
+#page {
+    margin-left: 14em;
+}
+
+#footer {
+    clear: both;
+    margin: 0;
+    padding: 0;
+}
+
+
