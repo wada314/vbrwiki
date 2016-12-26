@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
+# -*- coding: iso-8859-1 -*-
 """
-    MoinMoin - modified theme with sidebar
+    MoinMoin - modern theme
 
     @copyright: 2003-2005 Nir Soffer, Thomas Waldmann
     @license: GNU GPL, see COPYING for details.
 """
 
 from MoinMoin.theme import ThemeBase
-from MoinMoin.Page import Page
-
-from StringIO import StringIO
 
 class Theme(ThemeBase):
 
-    name = "sidebar"
+    name = "modern"
 
     def header(self, d, **kw):
         """ Assemble wiki header
@@ -52,30 +49,6 @@ class Theme(ThemeBase):
         ]
         return u'\n'.join(html)
 
-    def sidebar(self, d):
-        """ Assemble wiki sidebar """
-        name = u'サイドバー'
-        page = Page(self.request, name)
-        if not page.exists():
-            return u''
-
-        buff = StringIO()
-        self.request.redirect(buff)
-        page.send_page(content_only=1)
-        self.request.redirect()
-        return u'<div id="sidebar">%s</div>' % buff.getvalue()
-
-    def title(self, d):
-        return u'<div id="pagelocation">%s</div>' % d['title_text']
-
-    def favicon(self, d, **keywords):
-#        return u'''
-#<link rel="shortcut icon" href="%(link)s" type="image/vnd.microsoft.icon" />
-#<link rel="icon" href="%(link)s" type="image/vnd.microsoft.icon" />
-#''' % {u'link': self.cfg.url_prefix_static + 
-#       u'/gs3mobile/img/gs2logo_bullet_favicon.png'}
-        return u''
-
     def editorheader(self, d, **kw):
         """ Assemble wiki header for editor
 
@@ -90,17 +63,30 @@ class Theme(ThemeBase):
             # Header
             u'<div id="header">',
             self.title(d),
+            self.msg(d),
             u'</div>',
 
             # Post header custom html (not recommended)
             self.emit_custom_html(self.cfg.page_header2),
 
             # Start of page
-            self.msg(d),
-            self.sidebar(d),
             self.startPage(),
         ]
         return u'\n'.join(html)
+
+    def sidebar(self, d):
+        """ Assemble wiki sidebar """
+        name = u'サイドバー'
+        page = Page(self.request, name)
+        if not page.exists():
+            return u''
+
+        buff = StringIO()
+        self.request.redirect(buff)
+        page.send_page(content_only=1)
+        self.request.redirect()
+        return u'<div id="sidebar">%s</div>' % buff.getvalue()
+
 
     def footer(self, d, **keywords):
         """ Assemble wiki footer
@@ -131,6 +117,7 @@ class Theme(ThemeBase):
             ]
         return u'\n'.join(html)
 
+
 def execute(request):
     """
     Generate and return a theme object
@@ -140,4 +127,3 @@ def execute(request):
     @return: Theme object
     """
     return Theme(request)
-
