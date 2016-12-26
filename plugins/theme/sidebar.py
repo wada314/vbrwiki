@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 """
     MoinMoin - modern theme
 
@@ -7,10 +7,13 @@
 """
 
 from MoinMoin.theme import ThemeBase
+from MoinMoin.Page import Page
+
+from StringIO import StringIO
 
 class Theme(ThemeBase):
 
-    name = "modern"
+    name = "sidebar"
 
     def header(self, d, **kw):
         """ Assemble wiki header
