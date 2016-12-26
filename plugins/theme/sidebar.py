@@ -28,25 +28,23 @@ class Theme(ThemeBase):
 
             # Header
             u'<div id="header">',
+            self.logo(),
+            self.searchform(d),
+            self.username(d),
             u'<div id="locationline">',
             self.interwiki(d),
             self.title(d),
             u'</div>',
-
-            self.username(d),
             self.trail(d),
-
-            self.searchform(d),
+            self.navibar(d),
+            #u'<hr id="pageline">',
+            u'<div id="pageline"><hr style="display:none;"></div>',
+            self.msg(d),
             self.editbar(d),
-
-            u'</div>', # <header>
+            u'</div>',
 
             # Post header custom html (not recommended)
             self.emit_custom_html(self.cfg.page_header2),
-
-            u'<div>',
-            self.msg(d),
-            u'</div>',
 
             # Start of page
             self.sidebar(d),
