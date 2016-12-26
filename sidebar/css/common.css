@@ -562,3 +562,16 @@ TD.tip {
 
 /* admonition end */
 
+/* my settings */
+h1, h2, h3 {
+    background-color: #d6e4f9;
+}
+
+h1 {
+    border-left: 0.5em solid #ADB9CC
+}
+
+h2 {
+    border-left: 0.3em solid #ADB9CC
+    border-bottom: 0.1em solid #ADB9CC
+}
