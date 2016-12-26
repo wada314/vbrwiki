@@ -5,7 +5,7 @@ import csv
 
 import MoinMoin.macro.Include as Include
 
-Dependencies = ['pages']
+Dependencies = ['time']
 
 def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     request = macro.request
