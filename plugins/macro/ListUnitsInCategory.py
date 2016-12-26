@@ -30,7 +30,7 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         else:
             return '%s[%s]' % (name, level)
 
-    formatter = '''
+    page_format = '''
 <h3>%(名前)s</h3>
 <table>
   <tr style='text-align:center;font-weight:bold;background-color:#d6e4f9'>
@@ -96,7 +96,7 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
   </tr>
 </table>
 
-<h4>解説<sub><a href="%(名前)s?action=edit">[編集]</a></sub></h4>
+<h4>解説<sub>%(編集ボタン)s</sub></h4>
 '''
 
     output = u''
@@ -113,7 +113,12 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         unit['リーダー2'] = skill_pair_to_str(unit['リーダー2'], unit['リ値1'])
         unit['アシスト'] = skill_pair_to_str(unit['アシスト'], unit['ア値1'])
 
-        output += (formatter % unit).decode('utf-8')
+        edit = formatter.pagelink(True, unit['名前'].decode('utf-8'), querystr='action=edit')
+        edit += u'[編集]'
+        edit += formatter.pagelink(False)
+        unit['編集ボタン'] = edit.encode('utf-8')
+
+        output += (page_format % unit).decode('utf-8')
 
         output += Include.execute(macro, unit['名前'].decode('utf-8'))
 
