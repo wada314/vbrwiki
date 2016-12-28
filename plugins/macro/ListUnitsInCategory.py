@@ -6,6 +6,7 @@ import csv
 import MoinMoin.macro.Include as Include
 
 Dependencies = ['time']
+generates_headings = True
 
 def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     request = macro.request
@@ -30,8 +31,8 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         else:
             return '%s[%s]' % (name, level)
 
-    page_format = '''
-<h3>%(名前)s</h3>
+    
+    table_format = '''
 <table>
   <tr style='text-align:center;font-weight:bold;background-color:#d6e4f9'>
     <td>職業</td>
@@ -95,9 +96,8 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     <td>%(戦術5)s</td>
   </tr>
 </table>
-
-<h4>解説<sub>%(編集ボタン)s</sub></h4>
 '''
+    
 
     output = u''
     for unit in units:
@@ -113,12 +113,21 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         unit['リーダー2'] = skill_pair_to_str(unit['リーダー2'], unit['リ値2'])
         unit['アシスト'] = skill_pair_to_str(unit['アシスト'], unit['ア値1'])
 
-        edit = formatter.pagelink(True, unit['名前'].decode('utf-8'), querystr='action=edit')
-        edit += u'[編集]'
-        edit += formatter.pagelink(False)
-        unit['編集ボタン'] = edit.encode('utf-8')
+        # I think it is TableOfContents.py bug that we need to specify id at here.
+        output += formatter.heading(True, 3, id=unit['名前'].decode('utf-8'))
+        output += formatter.text(unit['名前'].decode('utf-8'))
+        output += formatter.heading(False, 3)
 
-        output += (page_format % unit).decode('utf-8')
+        output += (table_format % unit).decode('utf-8')
+
+        output += formatter.heading(True, 4)
+        output += formatter.text(u'解説')
+        output += formatter.sub(True)
+        output += formatter.pagelink(True, unit['名前'].decode('utf-8'), querystr='action=edit')
+        output += u'[編集]'
+        output += formatter.pagelink(False)
+        output += formatter.sub(False)
+        output += formatter.heading(False, 4)
 
         output += Include.execute(macro, unit['名前'].decode('utf-8'))
 
