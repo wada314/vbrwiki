@@ -123,7 +123,8 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         output += formatter.heading(True, 4)
         output += formatter.text(u'解説')
         output += formatter.sub(True)
-        output += formatter.pagelink(True, unit['名前'].decode('utf-8'), querystr='action=edit')
+        output += formatter.pagelink(True, unit['名前'].decode('utf-8'),
+                                     querystr='action=edit')
         output += u'[編集]'
         output += formatter.pagelink(False)
         output += formatter.sub(False)
