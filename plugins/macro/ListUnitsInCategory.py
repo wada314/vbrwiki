@@ -8,6 +8,21 @@ import MoinMoin.macro.Include as Include
 Dependencies = ['time']
 generates_headings = True
 
+JOB_INDEX = {
+    'ブレイダー': 1,
+    'ランサー': 2,
+    'シューター': 3,
+    'キャスター': 4,
+    'ガーダー': 5,
+    'デストロイヤー': 6,
+}
+
+def safe_toint(val, default=-1):
+        try:
+            return int(val)
+        except (ValueError, TypeError):
+            return default
+
 def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     request = macro.request
     formatter = macro.formatter
@@ -20,8 +35,11 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         return u'マスターユニットデータの取得に失敗'
 
     units = list(csv.DictReader(url, dialect=csv.excel_tab))
-    units = filter(lambda unit: unit['種別'] == requested_cat.encode('utf-8'), units)
-    units = filter(lambda unit: unit['目視確認した？'] == 'y', units)
+    units = filter(lambda unit: unit.get('種別', '') == requested_cat.encode('utf-8'), units)
+    units = filter(lambda unit: unit.get('目視確認した？', '') == 'y', units)
+    if requested_cat != u'英雄':
+        units.sort(key=lambda unit: safe_toint(unit.get('コスト', '1')))
+        units.sort(key=lambda unit: JOB_INDEX.get(unit.get('職業', ''), 999999))
 
     def skill_pair_to_str(name, level):
         if not name:
