@@ -38,8 +38,8 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     units = filter(lambda unit: unit.get('種別', '') == requested_cat.encode('utf-8'), units)
     units = filter(lambda unit: unit.get('目視確認した？', '') == 'y', units)
     if requested_cat != u'英雄':
-        units.sort(key=lambda unit: safe_toint(unit.get('コスト', '1')))
         units.sort(key=lambda unit: JOB_INDEX.get(unit.get('職業', ''), 999999))
+        units.sort(key=lambda unit: safe_toint(unit.get('コスト', '1')))
 
     def skill_pair_to_str(name, level):
         if not name:
