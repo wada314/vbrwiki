@@ -2,6 +2,7 @@
 
 import urllib2
 import csv
+import math
 
 import MoinMoin.macro.Include as Include
 
@@ -15,6 +16,15 @@ JOB_INDEX = {
     'キャスター': 4,
     'ガーダー': 5,
     'デストロイヤー': 6,
+}
+
+LEVEL_LIMITS = {
+    'S': [150, 175, 200],
+    'A': [140, 165, 190],
+    'B': [130, 155, 180],
+    'C': [120, 145, 170],
+    'D': [110, 135, 160],
+    'E': [100, 125, 150],
 }
 
 def safe_toint(val, default=-1):
@@ -187,12 +197,33 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         unit['アシスト'] = skill_pair_to_str(unit['アシスト'], unit['ア値1'])
         unit['メダリオン'] = medallion_formatter(unit['メダリオン'])
 
+        hp1 = safe_toint(unit.get('HP', ''), 0)
+        atk1 = safe_toint(unit.get('攻撃', ''), 0)
+        def1 = safe_toint(unit.get('防御', ''), 0)
+        spd1 = safe_toint(unit.get('速度', ''), 0)
+        int1 = safe_toint(unit.get('知力', ''), 0)
+        cost = safe_toint(unit.get('コスト', ''), 1) or 1
+        lv_limits = LEVEL_LIMITS.get(unit.get('成長度', ''), [1, 1, 1])
+
+        def lv2exp(lv):
+            return (lv - 1) * (lv - 1) * 10
+
+        def get_hp(hp1, lv):
+            return '%d' % int(hp1 * (float(lv - 1) / 4 + 1))
+
+        def get_status(status, cost, lv, moral, limit_break, is_int=False):
+            exp = lv2exp(lv)
+            moral_coeff = 0.5 if is_int else 1.0
+            status = int(status + (moral - 250) / 20.0 / math.sqrt(cost) * moral_coeff)
+            status = int(status * (1.0 + math.sqrt(exp) / 500.0) + math.sqrt(exp) / 25.0)
+            status += int(limit_break * 50 / (math.sqrt(cost) + 0.5))
+            return '%d' % status
+
         # I think it is TableOfContents.py bug that we need to specify id at here.
         output += formatter.heading(True, 3, id=unit['名前'].decode('utf-8'))
         output += formatter.text(unit['名前'].decode('utf-8'))
         output += formatter.heading(False, 3)
 
-        
         output += u''.join([
             f.table(True),
 
@@ -202,6 +233,12 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
             cell(f, '属性', header=True),
             cell(f, '装備', header=True),
             cell(f, '', rowspan=6),
+            cell(f, '状態', header=True),
+            cell(f, 'HP', header=True),
+            cell(f, '攻撃', header=True),
+            cell(f, '防御', header=True),
+            cell(f, '速度', header=True),
+            cell(f, '知力', header=True),
             f.table_row(False),
 
             ## row 2
@@ -209,6 +246,13 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
             cell(f, unit.get('職業', '')),
             cell(f, unit.get('属性', '')),
             cell(f, '%s、%s' % (unit.get('装備1', ''), unit.get('装備2', ''))),
+            #
+            cell(f, '初期状態', header=True),
+            cell(f, get_hp(hp1, 1), num=True),
+            cell(f, get_status(atk1, cost, 1, 250, 0), num=True),
+            cell(f, get_status(def1, cost, 1, 250, 0), num=True),
+            cell(f, get_status(spd1, cost, 1, 250, 0), num=True),
+            cell(f, get_status(int1, cost, 1, 250, 0, is_int=True), num=True),
             f.table_row(False),
 
             ## row 3
@@ -216,6 +260,13 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
             cell(f, '種族', header=True),
             cell(f, '成長度', header=True),
             cell(f, 'メダリオン', header=True),
+            #
+            cell(f, '＋士気1000', header=True),
+            cell(f, get_hp(hp1, 1), num=True),
+            cell(f, get_status(atk1, cost, 1, 1000, 0), num=True),
+            cell(f, get_status(def1, cost, 1, 1000, 0), num=True),
+            cell(f, get_status(spd1, cost, 1, 1000, 0), num=True),
+            cell(f, get_status(int1, cost, 1, 1000, 0, is_int=True), num=True),
             f.table_row(False),
 
             ## row 4
@@ -223,6 +274,13 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
             cell(f, unit.get('種族', '')),
             cell(f, unit.get('成長度', '')),
             cell(f, medallion_formatter(unit.get('メダリオン', ''))),
+            #
+            cell(f, '＋LvMAX', header=True),
+            cell(f, get_hp(hp1, lv_limits[0]), num=True),
+            cell(f, get_status(atk1, cost, lv_limits[0], 1000, 0), num=True),
+            cell(f, get_status(def1, cost, lv_limits[0], 1000, 0), num=True),
+            cell(f, get_status(spd1, cost, lv_limits[0], 1000, 0), num=True),
+            cell(f, get_status(int1, cost, lv_limits[0], 1000, 0, is_int=True), num=True),
             f.table_row(False),
 
             ## row 5
@@ -230,6 +288,13 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
             cell(f, '特攻', header=True),
             cell(f, 'コスト', header=True),
             cell(f, '雇用費用', header=True),
+            #
+            cell(f, '＋上限突破1', header=True),
+            cell(f, get_hp(hp1, lv_limits[1]), num=True),
+            cell(f, get_status(atk1, cost, lv_limits[1], 1000, 1), num=True),
+            cell(f, get_status(def1, cost, lv_limits[1], 1000, 1), num=True),
+            cell(f, get_status(spd1, cost, lv_limits[1], 1000, 0), num=True),
+            cell(f, get_status(int1, cost, lv_limits[1], 1000, 0, is_int=True), num=True),
             f.table_row(False),
 
             ## row 6
@@ -237,6 +302,13 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
             cell(f, unit.get('特攻', '')),
             cell(f, unit.get('コスト', ''), num=True),
             cell(f, unit.get('雇用費用', ''), num=True),
+            #
+            cell(f, '＋上限突破2', header=True),
+            cell(f, get_hp(hp1, lv_limits[2]), num=True),
+            cell(f, get_status(atk1, cost, lv_limits[2], 1000, 2), num=True),
+            cell(f, get_status(def1, cost, lv_limits[2], 1000, 2), num=True),
+            cell(f, get_status(spd1, cost, lv_limits[2], 1000, 0), num=True),
+            cell(f, get_status(int1, cost, lv_limits[2], 1000, 0, is_int=True), num=True),
             f.table_row(False),
 
             f.table(False),
