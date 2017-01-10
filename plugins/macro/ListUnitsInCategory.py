@@ -18,11 +18,44 @@ JOB_INDEX = {
 }
 
 def safe_toint(val, default=-1):
-        try:
-            return int(val)
-        except (ValueError, TypeError):
-            return default
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return default
 
+def medallion_formatter(src):
+    if src == '-' or not src:
+        return src
+
+    result = u''
+    if not isinstance(src, unicode):
+        src = src.decode('utf-8')
+
+    prev_medallion = u''
+    prev_medallion_count = 0
+    for m in src:
+        if m != prev_medallion:
+            if prev_medallion:
+                if prev_medallion_count == 0:
+                    pass
+                elif prev_medallion_count == 1:
+                    result += prev_medallion
+                else:
+                    result += u'%s%d' % (prev_medallion, prev_medallion_count)
+
+            prev_medallion = m
+            prev_medallion_count = 1
+        else:
+            prev_medallion_count += 1
+
+    if prev_medallion and prev_medallion_count:
+        if prev_medallion_count == 1:
+            result += prev_medallion
+        else:
+            result += u'%s%d' % (prev_medallion, prev_medallion_count)
+
+    return result.encode('utf-8')
+    
 def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     request = macro.request
     formatter = macro.formatter
@@ -40,6 +73,8 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     if requested_cat != u'英雄':
         units.sort(key=lambda unit: JOB_INDEX.get(unit.get('職業', ''), 999999))
         units.sort(key=lambda unit: safe_toint(unit.get('コスト', '1')))
+
+    
 
     def skill_pair_to_str(name, level):
         if not name:
@@ -130,6 +165,7 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         unit['リーダー1'] = skill_pair_to_str(unit['リーダー1'], unit['リ値1'])
         unit['リーダー2'] = skill_pair_to_str(unit['リーダー2'], unit['リ値2'])
         unit['アシスト'] = skill_pair_to_str(unit['アシスト'], unit['ア値1'])
+        unit['メダリオン'] = medallion_formatter(unit['メダリオン'])
 
         # I think it is TableOfContents.py bug that we need to specify id at here.
         output += formatter.heading(True, 3, id=unit['名前'].decode('utf-8'))
