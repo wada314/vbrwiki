@@ -153,6 +153,26 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     
 
     output = u''
+
+    def cell(formatter, text, **kw):
+        newkw = { 'style': 'white-space: nowrap;' }
+        if 'num' in kw:
+            newkw['style'] += 'text-align: right;'
+        else:
+            newkw['style'] += 'text-align: center;'
+        if 'header' in kw:
+            newkw['style'] += 'font-weight:bold;background-color:#d6e4f9;'
+        if 'colspan' in kw:
+            newkw['colspan'] = kw['colspan']
+        if 'rowspan' in kw:
+            newkw['rowspan'] = kw['rowspan']
+        return ''.join([
+            formatter.table_cell(True, **newkw),
+            formatter.text(text.decode('utf-8')),
+            formatter.table_cell(False)
+        ])
+
+    f = formatter
     for unit in units:
         unit['スキル1'] = skill_pair_to_str(unit['スキル1'], unit['ス値1'])
         unit['スキル2'] = skill_pair_to_str(unit['スキル2'], unit['ス値2'])
@@ -172,7 +192,57 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
         output += formatter.text(unit['名前'].decode('utf-8'))
         output += formatter.heading(False, 3)
 
-        output += (table_format % unit).decode('utf-8')
+        
+        output += u''.join([
+            f.table(True),
+
+            ## row 1
+            f.table_row(True),
+            cell(f, '職業', header=True),
+            cell(f, '属性', header=True),
+            cell(f, '装備', header=True),
+            cell(f, '', rowspan=6),
+            f.table_row(False),
+
+            ## row 2
+            f.table_row(True),
+            cell(f, unit.get('職業', '')),
+            cell(f, unit.get('属性', '')),
+            cell(f, '%s、%s' % (unit.get('装備1', ''), unit.get('装備2', ''))),
+            f.table_row(False),
+
+            ## row 3
+            f.table_row(True),
+            cell(f, '種族', header=True),
+            cell(f, '成長度', header=True),
+            cell(f, 'メダリオン', header=True),
+            f.table_row(False),
+
+            ## row 4
+            f.table_row(True),
+            cell(f, unit.get('種族', '')),
+            cell(f, unit.get('成長度', '')),
+            cell(f, medallion_formatter(unit.get('メダリオン', ''))),
+            f.table_row(False),
+
+            ## row 5
+            f.table_row(True),
+            cell(f, '特攻', header=True),
+            cell(f, 'コスト', header=True),
+            cell(f, '雇用費用', header=True),
+            f.table_row(False),
+
+            ## row 6
+            f.table_row(True),
+            cell(f, unit.get('特攻', '')),
+            cell(f, unit.get('コスト', ''), num=True),
+            cell(f, unit.get('雇用費用', ''), num=True),
+            f.table_row(False),
+
+            f.table(False),
+        ])
+
+#        output += (table_format % unit).decode('utf-8')
 
         output += formatter.heading(True, 4)
         output += formatter.text(u'解説')
