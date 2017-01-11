@@ -6,6 +6,8 @@ import math
 
 import MoinMoin.macro.Include as Include
 
+from util import *
+
 Dependencies = ['time']
 generates_headings = True
 
@@ -26,12 +28,6 @@ LEVEL_LIMITS = {
     'D': [110, 135, 160],
     'E': [100, 125, 150],
 }
-
-def safe_toint(val, default=-1):
-    try:
-        return int(val)
-    except (ValueError, TypeError):
-        return default
 
 def medallion_formatter(src):
     if src == '-' or not src:
@@ -83,34 +79,6 @@ def macro_ListUnitsInCategory(macro, _trailing_args=[]):
     if requested_cat != u'英雄':
         units.sort(key=lambda unit: JOB_INDEX.get(unit.get('職業', ''), 999999))
         units.sort(key=lambda unit: safe_toint(unit.get('コスト', '1')))
-
-    
-
-    def skill_pair_to_str(name, level):
-        if not name:
-            return ''
-        elif not level or level == '0':
-            return name
-        else:
-            return '%s[%s]' % (name, level)
-
-    def cell(formatter, text, **kw):
-        newkw = { 'style': 'white-space: nowrap;' }
-        if 'num' in kw:
-            newkw['style'] += 'text-align: right;'
-        else:
-            newkw['style'] += 'text-align: center;'
-        if 'header' in kw:
-            newkw['style'] += 'font-weight:bold;background-color:#d6e4f9;'
-        if 'colspan' in kw:
-            newkw['colspan'] = kw['colspan']
-        if 'rowspan' in kw:
-            newkw['rowspan'] = kw['rowspan']
-        return ''.join([
-            formatter.table_cell(True, **newkw),
-            formatter.text(text.decode('utf-8')),
-            formatter.table_cell(False)
-        ])
 
     f = formatter
     output = u''
